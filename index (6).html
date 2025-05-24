@@ -1,0 +1,484 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spin & Win Guaranteed Prize!</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600&display=swap');
+
+        :root {
+            --glow-color: #00ffff; /* Cyan glow */
+            --primary-accent: #ff00e0; /* Magenta accent */
+            --secondary-accent: #9d00ff; /* Purple accent */
+            --text-color: #f0f0f0;
+            --bg-gradient-start: #1a001a;
+            --bg-gradient-mid: #2a003a;
+            --bg-gradient-end: #000010;
+            --messenger-blue: #0084ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-mid), var(--bg-gradient-end));
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            text-align: center;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2), 0 0 30px var(--primary-accent) inset, 0 0 10px var(--glow-color);
+            width: 100%;
+            max-width: 500px;
+            animation: fadeInContainer 1s ease-out;
+        }
+
+        @keyframes fadeInContainer {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--glow-color);
+            text-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color), 0 0 15px #fff, 0 0 20px var(--primary-accent);
+            animation: pulseText 2s infinite alternate;
+        }
+
+        @keyframes pulseText {
+            from { text-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color), 0 0 15px #fff, 0 0 20px var(--primary-accent); }
+            to { text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color), 0 0 30px var(--primary-accent), 0 0 40px var(--glow-color); }
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 300px; /* Default size */
+            height: 300px; /* Default size */
+            margin: 30px auto;
+            filter: drop-shadow(0px 0px 15px var(--glow-color));
+        }
+
+        #spinWheelImage {
+            width: 100%;
+            height: 100%;
+            transition: transform 5s cubic-bezier(0.25, 0.1, 0.25, 1); /* Spin animation duration and easing */
+            border-radius: 50%; /* Make sure image is clipped if not perfectly round */
+        }
+        
+        .pointer {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 25px solid var(--primary-accent); /* Pointer color */
+            position: absolute;
+            top: -10px; /* Adjust to position correctly above the wheel */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            filter: drop-shadow(0px -2px 5px var(--primary-accent));
+        }
+
+        .action-button, .share-button {
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .action-button::before, .share-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            transition: all 0.6s ease;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 0;
+        }
+        .action-button:hover::before, .share-button:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .action-button span, .share-button span, .share-button svg { /* to keep text/icon above pseudo-element */
+            position: relative;
+            z-index: 1;
+        }
+
+
+        .action-button {
+            background: linear-gradient(45deg, var(--primary-accent), var(--secondary-accent));
+            box-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color), 0 0 5px var(--primary-accent) inset;
+        }
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px var(--glow-color), 0 0 30px var(--glow-color), 0 0 10px var(--primary-accent) inset;
+        }
+        .action-button:active {
+            transform: translateY(0px);
+            box-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color);
+        }
+        .action-button:disabled {
+            background: #555;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .action-button:disabled::before {
+            display: none;
+        }
+
+        .share-button {
+            background-color: var(--messenger-blue);
+            box-shadow: 0 0 10px var(--messenger-blue), 0 0 20px var(--messenger-blue), 0 0 5px #fff inset;
+        }
+        .share-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px var(--messenger-blue), 0 0 30px var(--messenger-blue), 0 0 10px #fff inset;
+        }
+        .share-button:active {
+            transform: translateY(0px);
+            box-shadow: 0 0 5px var(--messenger-blue), 0 0 10px var(--messenger-blue);
+        }
+        .share-button svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            fill: white;
+        }
+
+        .message-area, .form-area, .success-message-area {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: slideInUp 0.5s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-area h2 {
+            color: var(--glow-color);
+            margin-bottom: 10px;
+        }
+        .message-area p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        #prefillText {
+            background-color: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 5px;
+            font-style: italic;
+            margin-bottom: 15px;
+            border: 1px dashed var(--primary-accent);
+            color: #ccc;
+            word-wrap: break-word;
+        }
+
+        .form-area input[type="text"], .form-area input[type="tel"] {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--primary-accent);
+            background: rgba(0,0,0,0.3);
+            color: var(--text-color);
+            font-size: 1rem;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2) inset;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-area input[type="text"]::placeholder, .form-area input[type="tel"]::placeholder {
+            color: #999;
+        }
+        .form-area input[type="text"]:focus, .form-area input[type="tel"]:focus {
+            outline: none;
+            border-color: var(--glow-color);
+            box-shadow: 0 0 8px var(--glow-color), 0 0 5px rgba(0,0,0,0.2) inset;
+        }
+
+        .form-area label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--glow-color);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+            .wheel-container {
+                width: 260px; /* Slightly larger for small phones */
+                height: 260px;
+            }
+            .action-button, .share-button {
+                font-size: 1rem;
+                padding: 12px 25px;
+            }
+             .message-area p {
+                font-size: 0.9rem;
+            }
+        }
+        @media (max-width: 400px) {
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.4rem;
+            }
+            .wheel-container {
+                width: calc(100vw - 60px); /* Adjust to viewport width */
+                height: calc(100vw - 60px);
+                max-width: 220px;
+                max-height: 220px;
+            }
+            .action-button, .share-button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Spin the Wheel & Win a Guaranteed Prize!</h1>
+
+        <div class="wheel-container">
+            <div class="pointer"></div>
+            <img id="spinWheelImage" src="20250523_193737.png" alt="Spin Wheel">
+        </div>
+
+        <button id="spinButton" class="action-button"><span>SPIN NOW</span></button>
+
+        <div id="messageArea" class="message-area hidden">
+            <h2 id="winMessageText"></h2>
+            <p id="shareInstructionsText"></p>
+            <p><strong>Suggested Message to share (you might need to copy & paste this):</strong></p>
+            <div id="prefillText">I just won a real prize on this Spin & Win page! Try your luck too!</div>
+            <button id="messengerShareButton" class="share-button">
+                <svg viewBox="0 0 24 24"><path d="M12,2C6.48,2,2,6.04,2,11c0,2.89,1.52,5.46,3.88,7.11L3.12,21.7c-0.15,0.29,0.02,0.65,0.33,0.78 c0.1,0.04,0.21,0.06,0.31,0.06c0.21,0,0.41-0.09,0.55-0.25l2.98-3.41C8.69,19.65,10.28,20,12,20c5.52,0,10-4.04,10-9 S17.52,2,12,2z M12.83,13.63L10.8,10.1L5.66,12.36l6.51-4.52l2.02,3.53l5.15-2.26L12.83,13.63z"></path></svg>
+                <span>Share on Messenger</span>
+            </button>
+        </div>
+
+        <div id="formArea" class="form-area hidden">
+            <h2>Claim Your Prize</h2>
+            <form id="claimForm">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                
+                <label for="mobile">Mobile Number:</label>
+                <input type="tel" id="mobile" name="mobile" placeholder="Enter your 10-15 digit mobile" required pattern="[0-9]{10,15}"> 
+                
+                <button type="submit" id="submitClaimButton" class="action-button"><span>Submit Claim</span></button>
+            </form>
+        </div>
+
+        <div id="successMessageArea" class="success-message-area hidden">
+            <h2>Your prize claim has been submitted successfully!</h2>
+            <p>Congratulations again! You will be contacted soon.</p>
+        </div>
+    </div>
+
+    <script>
+        const spinWheelImage = document.getElementById('spinWheelImage');
+        const spinButton = document.getElementById('spinButton');
+        const messageArea = document.getElementById('messageArea');
+        const winMessageText = document.getElementById('winMessageText');
+        const shareInstructionsText = document.getElementById('shareInstructionsText');
+        const prefillTextDiv = document.getElementById('prefillText'); 
+        const messengerShareButton = document.getElementById('messengerShareButton');
+        const formArea = document.getElementById('formArea');
+        const claimForm = document.getElementById('claimForm');
+        const submitClaimButton = document.getElementById('submitClaimButton');
+        const successMessageArea = document.getElementById('successMessageArea');
+
+        // Prize segments on the wheel (MUST match visual order on 20250523_193737.png, clockwise starting from the segment aligned with the pointer at 0 degrees)
+        const prizesOnWheel = [
+            "100 PayTM Cash",       // Segment 0 
+            "Movie Ticket",         // Segment 1
+            "iPhone 14",            // Segment 2 
+            "Samsung TV",           // Segment 3
+            "Smartwatch",           // Segment 4
+            "Bluetooth Speaker",    // Segment 5
+            "AirPods",              // Segment 6
+            "Better Luck Next Time",// Segment 7 (This will be excluded from actual wins)
+            "Amazon Voucher ₹50",   // Segment 8
+            "Free Coffee Coupon",   // Segment 9
+            "20% Discount Voucher", // Segment 10
+            "Surprise Gift Box"     // Segment 11
+        ];
+
+        const winnablePrizes = prizesOnWheel.filter(prize => prize !== "Better Luck Next Time");
+        const degreesPerSegment = 360 / prizesOnWheel.length;
+        let currentWheelRotation = 0;
+        let isSpinning = false;
+        let wonPrizeName = '';
+
+        const FACEBOOK_APP_ID = 'YOUR_FACEBOOK_APP_ID'; // <<<<----- REPLACE THIS!
+
+        spinButton.addEventListener('click', () => {
+            if (isSpinning) return;
+            isSpinning = true;
+            spinButton.disabled = true;
+            spinButton.querySelector('span').textContent = "Spinning...";
+
+            messageArea.classList.add('hidden');
+            formArea.classList.add('hidden');
+            successMessageArea.classList.add('hidden');
+
+            const randomWinnableIndex = Math.floor(Math.random() * winnablePrizes.length);
+            wonPrizeName = winnablePrizes[randomWinnableIndex];
+            const winningSegmentIndexOnWheel = prizesOnWheel.indexOf(wonPrizeName);
+
+            let targetSegmentMiddleAngle = (winningSegmentIndexOnWheel * degreesPerSegment) + (degreesPerSegment / 2);
+            const randomOffsetRange = degreesPerSegment * 0.30; 
+            const randomOffset = (Math.random() * randomOffsetRange) - (randomOffsetRange / 2);
+            targetSegmentMiddleAngle = (targetSegmentMiddleAngle + randomOffset + 360) % 360;
+
+            const angleToAlignPrizeAtTop = (360 - targetSegmentMiddleAngle) % 360;
+            const numberOfFullSpins = 5 + Math.floor(Math.random() * 4); 
+            
+            const currentFullRotationsCompleted = Math.floor(currentWheelRotation / 360);
+            let newTotalRotation = (currentFullRotationsCompleted + numberOfFullSpins) * 360 + angleToAlignPrizeAtTop;
+
+            if (newTotalRotation <= currentWheelRotation) {
+                 newTotalRotation = currentWheelRotation + (numberOfFullSpins * 360) + angleToAlignPrizeAtTop + 360;
+            }
+            currentWheelRotation = newTotalRotation;
+            
+            spinWheelImage.style.transform = `rotate(${currentWheelRotation}deg)`;
+        });
+
+        spinWheelImage.addEventListener('transitionend', () => {
+            isSpinning = false;
+            spinButton.classList.add('hidden'); 
+
+            winMessageText.textContent = `Congratulations! You won ${wonPrizeName}!`;
+            shareInstructionsText.textContent = `To claim your prize, please share this page with 10 Facebook Messenger friends.`;
+            messageArea.classList.remove('hidden');
+
+            confetti({
+                particleCount: 180,
+                spread: 100,
+                origin: { y: 0.6 },
+                zIndex: 9999 
+            });
+        });
+
+        messengerShareButton.addEventListener('click', () => {
+            const pageUrl = window.location.href;
+            const encodedPageUrl = encodeURIComponent(pageUrl);
+            let messengerUrl;
+
+            if (FACEBOOK_APP_ID && FACEBOOK_APP_ID !== 'YOUR_FACEBOOK_APP_ID' && FACEBOOK_APP_ID.trim() !== '') {
+                 messengerUrl = `fb-messenger://share/?link=${encodedPageUrl}&app_id=${FACEBOOK_APP_ID}`;
+            } else {
+                 messengerUrl = `fb-messenger://share/?link=${encodedPageUrl}`;
+                 console.warn("Facebook App ID is not configured or is using the placeholder. Messenger share (fb-messenger://) may not work as expected or could be blocked by the browser/OS. For reliable sharing, please configure a valid FACEBOOK_APP_ID in the script.");
+                 alert("Facebook App ID is not configured for optimal sharing. Please copy the link manually if Messenger doesn't open.");
+            }
+
+            const messengerWindow = window.open(messengerUrl, '_blank');
+            if (!messengerWindow) { 
+                window.location.href = messengerUrl;
+            }
+
+            messengerShareButton.querySelector('span').textContent = "Processing...";
+            messengerShareButton.disabled = true;
+
+            setTimeout(() => {
+                messageArea.classList.add('hidden');
+                formArea.classList.remove('hidden');
+                
+                messengerShareButton.querySelector('span').textContent = "Share on Messenger";
+                messengerShareButton.disabled = false;
+            }, 3000); 
+        });
+
+        claimForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const nameInput = document.getElementById('name');
+            const mobileInput = document.getElementById('mobile');
+
+            if (nameInput.value.trim() === '' || mobileInput.value.trim() === '') {
+                alert('Please fill in both name and mobile number.');
+                return;
+            }
+            if (!/^\d{10,15}$/.test(mobileInput.value.trim())) {
+                alert('Please enter a valid mobile number (10-15 digits, numbers only).');
+                return;
+            }
+
+            submitClaimButton.querySelector('span').textContent = "Submitting...";
+            submitClaimButton.disabled = true;
+
+            setTimeout(() => {
+                formArea.classList.add('hidden');
+                successMessageArea.classList.remove('hidden');
+                
+                submitClaimButton.querySelector('span').textContent = "Submit Claim";
+                submitClaimButton.disabled = false;
+            }, 1500);
+        });
+
+        const img = new Image();
+        img.src = '20250523_193737.png'; // Updated image name here
+        img.onerror = function() {
+            console.error("Error: 20250523_193737.png not found in the same folder as the HTML file. The wheel will not display correctly.");
+            const wheelContainer = document.querySelector('.wheel-container');
+            if (wheelContainer) {
+                const errorMsg = document.createElement('p');
+                errorMsg.textContent = 'Wheel image (20250523_193737.png) not found. Please ensure it is in the correct folder.';
+                errorMsg.style.color = 'red';
+                errorMsg.style.background = 'white';
+                errorMsg.style.padding = '10px';
+                wheelContainer.parentNode.insertBefore(errorMsg, wheelContainer.nextSibling);
+                wheelContainer.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
